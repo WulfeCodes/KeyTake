@@ -8,7 +8,7 @@ app = Flask(__name__)
 GM_API_KEY = 'mlYGolL23Ch5uEEhTchiumiNGR15JqSWWiGyCwni'
 
 # fetching the group_ids
-def fetchGroupID(access_token):
+def fetchGroupData(access_token):
     url = 'https://api.groupme.com/v3/groups'
     headers = {
         'Content-Type': 'application/json',
@@ -24,8 +24,8 @@ def fetchGroupID(access_token):
         return None
 
 @app.route("/fetch_group_id")
-def fetch_group_id():
-    group_id = fetchGroupID(access_token=GM_API_KEY)
+def fetch_group_data():
+    group_id = fetchGroupData(access_token=GM_API_KEY)
     return group_id
 
 # -------------------------------------------------------------------
@@ -33,15 +33,16 @@ def fetch_group_id():
 # fetching the group_messages
 def getMessages(group_id):
 
-    data = fetchGroupID(access_token=GM_API_KEY) # a dictionary
+    data = fetchGroupData(access_token=GM_API_KEY) # a dictionary
 
-    for group in data:
-        if group["id"] == group_id:
-            return group['message']
+    for item in data['response']:
+        if item['id'] == group_id:            
+            return item['messages']
+        
 
 @app.route("/get_messages")
 def get_messsages():
-    group_id = getMessages(633819540)
+    group_id = getMessages('95435321')
     return group_id
 
 # -------------------------------------------------------------------
@@ -53,7 +54,7 @@ def index():
 
 @app.route("/home")
 def home():
-    group_id = fetch_group_id() # it's  a dictionary.
+    group_id = fetch_group_id()['response'] # it's  a dictionary.
     return render_template('home.html', group_id=group_id)
 
 
