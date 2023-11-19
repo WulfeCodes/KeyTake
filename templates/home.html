@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <title>Home Page</title>
+    <link rel="stylesheet" href="../static/styles/homepage.css">
 </head>
 
 <body>
@@ -13,16 +14,22 @@
     {% if group_id %}
     <div>
         <h2>Group Information:</h2>
-        <!-- Iterate over the dictionary and display key-value pairs -->
-        <ul>
+        <!-- Apply CSS class to the main group list for styling -->
+        <ul class="group-list">
             {% for item in group_id %}
-            <li>{{ item }}</li>
+            <li>
+                <a href="">
+                    <span class="property">Name:</span> {{ item['name'] }}<br />
+                    <span class="property">ID:</span> {{ item['id'] }}
+                </a>
+            </li>
             {% endfor %}
         </ul>
     </div>
     {% else %}
     <p>No group information available.</p>
     {% endif %}
+
 </body>
 
 </html>

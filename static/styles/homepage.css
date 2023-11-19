@@ -1,0 +1,101 @@
+/* homepage.css */
+
+body {
+    font-family: 'Helvetica', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    color: #009688;
+    text-align: center;
+    margin-top: 50px;
+}
+
+.group-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 30px;
+}
+
+.group-list {
+    list-style: none;
+    padding: 0;
+}
+
+.group-list li {
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    color: white;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.property {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.no-info {
+    text-align: center;
+    color: #777;
+    margin-top: 20px;
+}
+
+/* Remove underlines from anchor tags */
+.group-list a {
+    text-decoration: none;
+    color: #e8e8e8; 
+}
+
+/* Styles similar to the index.css for consistency */
+body {
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* Light text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    margin: 0;
+    padding: 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5em;
+}
+
+p {
+    font-size: 1.2rem;
+    margin-bottom: 2em;
+}
+
+button {
+    background-color: #1f1f1f; /* Dark button background */
+    color: #ffffff; /* Light button text */
+    border: 2px solid #ffffff; /* White border */
+    padding: 10px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #ffffff; /* Light button background */
+    color: #1f1f1f; /* Dark button text */
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
