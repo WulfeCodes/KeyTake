@@ -2,10 +2,10 @@ from flask import Flask, jsonify, redirect, render_template, request, url_for
 import requests
 import json
 
+from api_call import getMessages, GM_API_KEY
+
 app = Flask(__name__)
 
-# constants
-GM_API_KEY = 'mlYGolL23Ch5uEEhTchiumiNGR15JqSWWiGyCwni'
 
 # fetching the group_ids
 def fetchGroupData(access_token):
@@ -31,19 +31,19 @@ def fetch_group_data():
 # -------------------------------------------------------------------
 
 # fetching the group_messages
-def getMessages(group_id):
+# def getMessages(group_id):
 
-    data = fetchGroupData(access_token=GM_API_KEY) # a dictionary
+#     data = fetchGroupData(access_token=GM_API_KEY) # a dictionary
 
-    for item in data['response']:
-        if item['id'] == group_id:            
-            return item['messages']
+#     for item in data['response']:
+#         if item['id'] == group_id:            
+#             return item['messages']
         
 
-@app.route("/get_messages")
-def get_messsages():
-    group_id = getMessages('95435321')
-    return group_id
+# @app.route("/get_messages")
+# def get_messsages():
+#     group_id = getMessages('95435321')
+#     return group_id
 
 # -------------------------------------------------------------------
 
@@ -57,10 +57,10 @@ def home():
     group_id = fetch_group_data()['response'] # it's  a dictionary.
     return render_template('home.html', group_id=group_id)
 
-@app.route("/login")
-def login():
-    return None
-
+@app.route("/display_info")
+def displayInfo():
+    messages = getMessages(GM_API_KEY, '95435321')
+    return messages
 
 
 if __name__ == "__main__":
