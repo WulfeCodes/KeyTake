@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Home Page</title>
 </head>
+
 <body>
     <h1>Welcome to the Home Page</h1>
 
     <!-- Check if group_id exists and is not empty -->
     {% if group_id %}
-        <div>
-            <h2>Group Information:</h2>
-            <!-- Iterate over the dictionary and display key-value pairs -->
-            {% for key, value in group_id.items() %}
-                <p><strong>{{ key }}:</strong> {{ value }}</p>
+    <div>
+        <h2>Group Information:</h2>
+        <!-- Iterate over the dictionary and display key-value pairs -->
+        <ul>
+            {% for item in group_id %}
+            <li>{{ item }}</li>
             {% endfor %}
-        </div>
+        </ul>
+    </div>
     {% else %}
-        <p>No group information available.</p>
+    <p>No group information available.</p>
     {% endif %}
 </body>
+
 </html>
