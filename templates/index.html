@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My First HTML Page</title>
+    <title>KeyTake</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/index.css') }}">
 </head>
 <body>
-    <h1>Welcome to My Webpage</h1>
-    <p>This is a paragraph on my first webpage!</p>
-    <a href="https://www.example.com">Click here to visit Example.com</a>
+    <h1>KeyTake</h1>
+    <p>facilitating groupchatting and planning by harnessing the power of generative AI</p>
+    <form action="/home" method="get">
+        <button type="submit">Add your GroupChats</button>
+    </form>
 </body>
 </html>

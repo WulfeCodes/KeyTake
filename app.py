@@ -1,3 +1,4 @@
+from tokenize import group
 from flask import Flask, jsonify, render_template
 import requests
 import json
@@ -5,16 +6,28 @@ from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
 
+from pymongo import MongoClient
+from pymongo.server_api import ServerApi
 
 
 app = Flask(__name__)
 
-load_dotenv()  # This loads the environment variables from `.env`.
-
-# Now you can use os.environ to get environment variables
+load_dotenv()
 GM_API_KEY = os.getenv('GM_API_KEY')
+ONEAI_KEY = os.getenv('ONEAI_KEY')
 
-# fetching the group_ids
+# database configuration--------------------------------------------------------
+MONGO_USERNAME = os.getenv('MONGO_USERNAME')
+MONGO_PW = os.getenv('MONGO_PW')
+uri = f"mongodb+srv://{MONGO_USERNAME}:{MONGO_PW}@freecluster.xfcsiur.mongodb.net/?retryWrites=true&w=majority"
+client = MongoClient(uri, server_api=ServerApi('1'))
+
+db = client['AIATL']
+groups_collection = db['Groups']
+messages_collection = db['Messages']
+oneai_collection = db['OneAISummary']
+
+# fetching the group_ids -------------------------------------------------------
 def fetchGroupData(access_token):
     url = 'https://api.groupme.com/v3/groups'
     headers = {
@@ -23,27 +36,40 @@ def fetchGroupData(access_token):
     }
 
     response = requests.get(url, headers=headers)
-
     if response.status_code == 200:
         return response.json()
     else:
         print(f"Failed to get groups. Status code: {response.status_code}")
         return None
 
-@app.route("/fetch_group_id")
+def insert_groups_into_mongodb(groups, collection):
+    for group in groups['response']:
+        group_info = {'id': group['id'], 
+                       'name': group['name'],
+                       'image_url': group['image_url']}
+        collection.update_one({'id': group['id']}, {'$set': group_info}, upsert=True)
+
+
+def retrieve_groups_from_mongodb(collection):
+    groups_cursor = collection.find({})
+    return list(groups_cursor)
+
+
+@app.route("/home")
 def fetch_group_data():
-    group_id = fetchGroupData(access_token=GM_API_KEY)
-    return group_id
+    groups = fetchGroupData(access_token=GM_API_KEY)
+    insert_groups_into_mongodb(groups, groups_collection)
+    groups_from_db = retrieve_groups_from_mongodb(groups_collection)
+    return render_template('home.html', group_data=groups_from_db)
+# ------------------------------------------------------------------------------
 
-# -------------------------------------------------------------------
-
-# fetching the group_messages
+# fetching the group_messages---------------------------------------------------
 def getMessages(access_token, group_id):
-    # Define the base URL for the GroupMe API
-    base_url = f"https://api.groupme.com/v3/groups/{group_id}/messages"
+    url = f"https://api.groupme.com/v3/groups/{group_id}/messages"
     
     # Calculate the timestamp for one week ago
-    one_week_ago = datetime.now() - timedelta(weeks=1)
+    # one_week_ago = datetime.now() - timedelta(weeks=1)
+    one_day_ago = datetime.now() - timedelta(days=1)
     
     # Initialize parameters for the API call
     params = {
@@ -56,74 +82,151 @@ def getMessages(access_token, group_id):
 
     while fetch_more:
         # Make the API call
-        response = requests.get(base_url, params=params)
+        response = requests.get(url, params=params)
         
         # Check the response status
         if response.status_code == 200:
             data = response.json()['response']
             messages = data['messages']
-            print(type(messages))
 
             # Check if the last message is older than one week
             if messages:
-                # Convert the 'created_at' timestamp to a datetime object
                 last_message_time = datetime.utcfromtimestamp(messages[-1]['created_at'])
                 
                 # If the last message is within the past week, fetch the next batch
-                fetch_more = last_message_time > one_week_ago
+                fetch_more = last_message_time > one_day_ago
                 
                 # Update the before_id to fetch the next batch of messages
                 params['before_id'] = messages[-1]['id']
                 
-                # Extract only relevant information and add to the list
                 for message in messages:
                     message_time = datetime.utcfromtimestamp(message['created_at'])
-                    # Check if the message is within the past week
-                    if message_time > one_week_ago:
-                        all_messages.append({
+                    # Check if it is within time range
+                    if message_time > one_day_ago:
+                        message_info = {
                             'id': message['id'],
+                            'group_id': message['group_id'],
                             'name': message['name'],
                             'text': message['text'],
                             'created_at': datetime.utcfromtimestamp(message['created_at'])
-                        })
+                            # 'created_at': message['created_at'].isoformat()
+                        }
+                        all_messages.append(message_info)
+                        # messages_collection.insert_one(message_info)
                     else:
                         # If a message is older than one week, stop fetching
                         fetch_more = False
                         break
         elif response.status_code == 304:
-            # No more messages found
+            print('No more messages found')
             break
         else:
-            # Handle other errors (e.g., network or authorization issues)
             print("Error:", response.status_code, response.text)
             fetch_more = False
     
     return all_messages
         
 
-@app.route("/get_messages")
-def get_messages():
-    messages = getMessages(GM_API_KEY, '95435321')
-    # return messages
-    return jsonify(messages)
+def insert_messages_into_mongodb(messages, collection):
+    for message in messages:
+        # Use the message ID as the unique identifier for upsert operations
+        collection.update_one({'id': message['id']}, {'$set': message}, upsert=True)
 
+# filter passed in as int, converted to string
+def retrieve_messages_from_mongodb(collection, filter):
+    messages_cursor = collection.find({'group_id': f'{filter}'})
+    return list(messages_cursor)
+
+# def insert_groups_into_mongodb(groups, collection):
+#     for group in groups['response']:
+#         group_info = {'id': group['id'], 
+#                        'name': group['name'],
+#                        'image_url': group['image_url']}
+#         # collection.insert_one(group_info)
+#         collection.update_one({'id': group['id']}, {'$set': group_info}, upsert=True)
+
+
+# def retrieve_groups_from_mongodb(collection):
+#     groups_cursor = collection.find({})
+#     return list(groups_cursor)
+
+def getFormattedMessages(messages_from_db):
+    formatted_messages = []
+    for message in messages_from_db:
+        try:
+            speaker = message.get("name","")
+        except KeyError:
+            speaker = "Unknown"  # Use a default value if 'speaker' field is missing
+        utterance = message.get("text", "")
+        formatted_message = {"speaker": speaker, "utterance": utterance}
+        formatted_messages.append(formatted_message)
+
+    return formatted_messages
+
+def oneAi_summary(oneAi_token, messages, skill): # message is in {name: message} form
+    url = "https://api.oneai.com/api/v0/pipeline"
+  
+    headers = {
+        "api-key": oneAi_token, 
+        "content-type": "application/json"
+    }
+    payload = {
+        "input": messages,  # Use your formatted_messages list here
+        "input_type": "conversation",
+        "content_type": "application/json",
+        "output_type": "json",
+        "multilingual": {
+            "enabled": True
+        },
+        "steps": [
+            {
+                "skill": skill
+            }
+        ],
+    }
+    r = requests.post(url, json=payload, headers=headers)
+    data = r.json()
+    try:
+        r = requests.post(url, json=payload, headers=headers)
+        r.raise_for_status()  # Will raise HTTPError for bad requests (4XX or 5XX)
+        data = r.json()
+        print(data)
+        return data['output'][0]['contents'][0]['utterance']  # text
+    except requests.exceptions.HTTPError as e:
+        print(f"HTTP Error: {e}")
+    except requests.exceptions.RequestException as e:
+        print(f"Error during requests to {url}: {e}")
+    except KeyError as e:
+        print(f"Key error in parsing response: {e}")
+    except IndexError as e:
+        print(f"Index error in parsing response: {e}")
+    return None
+
+
+@app.route("/group/<int:group_id>")
+def load_group_page(group_id):
+
+    messages = getMessages(access_token=GM_API_KEY, group_id=group_id)
+    insert_messages_into_mongodb(messages, messages_collection)
+    messages_from_db = retrieve_messages_from_mongodb(messages_collection, group_id)
+    formatted_messages = getFormattedMessages(messages_from_db)
+    print(formatted_messages)
+    print("A")
+    summary = oneAi_summary(ONEAI_KEY, formatted_messages, "summarize")
+    print(f'Summary: {summary}\n')
+    # summary = "Avihhan has joined the group. Zach Cheng, Vijay Wulfekuhle and Raphael Palacio will go to Chick-fil-A on Saturday at 8 pm."
+    print("B")
+    # action_items = oneAi_summary(ONEAI_KEY, formatted_messages, "action-items")
+    # print(f'Action Items: {action_items}\n')
+    action_items = "Lunch at Chick-fil-A on Saturday at 8 pm."
+    print("C")
+
+    return render_template('group_page.html', summary=summary, action_items=action_items)
 # -------------------------------------------------------------------
 
 @app.route("/")
 def index():
     return render_template('index.html')
-
-
-@app.route("/home")
-def home():
-    group_id = fetch_group_data()['response'] # it's  a dictionary.
-    return render_template('home.html', group_id=group_id)
-
-
-@app.route("/login")
-def login():
-    return "<h1>login page</h1>"
-
 
 
 if __name__ == "__main__":

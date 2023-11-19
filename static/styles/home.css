@@ -1,0 +1,82 @@
+body {
+    background-color: #121212; /* Dark background */
+    color: #ffffff; /* Light text */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Remove the justify-content or set it to flex-start to align content to the top */
+    justify-content: flex-start; /* Aligns content to the top */
+    text-align: center;
+    /* Remove the height property to allow the body to expand with content */
+}
+
+h1, h2 {
+    color: #ffffff;
+    font-size: 3rem;
+    margin-top: 0; /* Removes any default margin from the top of the heading */
+    margin-bottom: 0.5em;
+}
+
+
+h2 {
+    font-size: 2rem; /* Slightly smaller than h1 */
+    margin-top: 1em; /* Spacing above h2 */
+}
+
+p {
+    font-size: 1.2rem;
+    margin-bottom: 2em;
+}
+
+.group-list {
+    list-style: none; /* Removes default list styling */
+    padding: 0;
+    width: 100%; /* Full width of its container */
+    max-width: 600px; /* Maximum width of the list */
+}
+
+.group-list li {
+    background-color: #1f1f1f; /* Dark background for list items */
+    margin-bottom: 1em; /* Spacing between list items */
+    padding: 15px;
+    border-radius: 5px; /* Rounded corners for list items */
+    transition: background-color 0.3s ease-in-out;
+}
+
+.group-list li:hover {
+    background-color: #333333; /* Slightly lighter on hover */
+}
+
+.group-list .property {
+    font-weight: bold; /* Makes the 'Name' and 'ID' labels bold */
+    color: #ffffff;
+}
+
+.group-list a {
+    color: #ffffff; /* Ensures text links are white */
+    text-decoration: none; /* Removes underline from links */
+    display: block; /* Makes the entire list item clickable */
+}
+
+.group-list img.group-image {
+    width: 50px; /* Example width, adjust as needed */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px; /* Rounds the corners of the image */
+    margin-top: 10px; /* Spacing above the image */
+    display: block; /* Ensures that the image does not inline with text */
+    margin-left: auto; /* Centers the image */
+    margin-right: auto;
+}
+
+/* Responsive design for smaller devices */
+@media (max-width: 768px) {
+    h1, h2 {
+        font-size: 2.5rem; /* Smaller font size for smaller devices */
+    }
+    .group-list img.group-image {
+        width: 40px; /* Smaller image size for smaller devices */
+    }
+}

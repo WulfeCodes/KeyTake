@@ -1,23 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Home Page</title>
-</head>
-<body>
-    <h1>Welcome to the Home Page</h1>
 
-    <!-- Check if group_id exists and is not empty -->
-    {% if group_id %}
-        <div>
-            <h2>Group Information:</h2>
-            <!-- Iterate over the dictionary and display key-value pairs -->
-            {% for key, value in group_id.items() %}
-                <p><strong>{{ key }}:</strong> {{ value }}</p>
+<head>
+    <meta charset="UTF-8" />
+    <title>Home Page</title>
+    <link rel="stylesheet" href="../static/styles/home.css">
+</head>
+
+<body>
+    <h1>Welcome to KeyTake</h1>
+    {% if group_data %}
+    <div>
+        <h2>Select a GroupChat</h2>
+        <ul class="group-list">
+            {% for item in group_data %}
+            <li>
+                <a href="{{ url_for('load_group_page', group_id=item['id']) }}">
+                    <span class="property">Name:</span> {{ item['name'] }}<br />
+                    <span class="property">ID:</span> {{ item['id'] }}
+                    {% if item['image_url'] %}
+                    <img src="{{ item['image_url'] }}" alt="Group Image" class="group-image">
+                    {% endif %}
+                </a>
+            </li>
             {% endfor %}
-        </div>
+        </ul>
+    </div>
     {% else %}
-        <p>No group information available.</p>
+    <p>No group information available.</p>
     {% endif %}
+
 </body>
+
 </html>

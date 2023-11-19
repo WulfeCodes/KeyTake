@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KeyTakes - Group Page</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='styles/group_page.css') }}">
+</head>
+<body>
+    <div class="container">
+        <div class="column summary">
+            <h2>Daily Summary</h2>
+            <p>{{ summary }}</p>
+        </div>
+        <div class="column weekly-summary">
+            <h2>Weekly Summary</h2>
+            <p>Work in Progress</p>
+        </div>
+        <div class="column action-items">
+            <h2>Action Items</h2>
+            <p>{{ action_items }}</p>
+            <img src="{{ url_for('static', filename='images/calendar-248.png') }}" alt="Calendar" class="calendar-image">
+        </div>
+    </div>
+</body>
+</html>
