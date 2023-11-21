@@ -1,7 +1,5 @@
-from tokenize import group
-from flask import Flask, jsonify, render_template
+from flask import Flask, render_template
 import requests
-import json
 from datetime import datetime, timedelta
 import os
 from dotenv import load_dotenv
@@ -67,41 +65,33 @@ def fetch_group_data():
 def getMessages(access_token, group_id):
     url = f"https://api.groupme.com/v3/groups/{group_id}/messages"
     
-    # Calculate the timestamp for one week ago
+    # Change for different time periods
     one_week_ago = datetime.now() - timedelta(weeks=1)
     # one_day_ago = datetime.now() - timedelta(days=1)
     
     # Initialize parameters for the API call
     params = {
         'token': access_token,
-        'limit': 100  # Set limit to the maximum value
+        'limit': 100
     }
 
     all_messages = []
     fetch_more = True
 
     while fetch_more:
-        # Make the API call
         response = requests.get(url, params=params)
         
-        # Check the response status
         if response.status_code == 200:
             data = response.json()['response']
             messages = data['messages']
 
-            # Check if the last message is older than one week
             if messages:
                 last_message_time = datetime.utcfromtimestamp(messages[-1]['created_at'])
-                
-                # If the last message is within the past week, fetch the next batch
                 fetch_more = last_message_time > one_week_ago
-                
-                # Update the before_id to fetch the next batch of messages
                 params['before_id'] = messages[-1]['id']
                 
                 for message in messages:
                     message_time = datetime.utcfromtimestamp(message['created_at'])
-                    # Check if it is within time range
                     # if message_time > one_day_ago:
                     if message_time > one_week_ago:
                         message_info = {
@@ -110,12 +100,9 @@ def getMessages(access_token, group_id):
                             'name': message['name'],
                             'text': message['text'],
                             'created_at': datetime.utcfromtimestamp(message['created_at'])
-                            # 'created_at': message['created_at'].isoformat()
                         }
                         all_messages.append(message_info)
-                        # messages_collection.insert_one(message_info)
                     else:
-                        # If a message is older than one week, stop fetching
                         fetch_more = False
                         break
         elif response.status_code == 304:
@@ -130,26 +117,13 @@ def getMessages(access_token, group_id):
 
 def insert_messages_into_mongodb(messages, collection):
     for message in messages:
-        # Use the message ID as the unique identifier for upsert operations
         collection.update_one({'id': message['id']}, {'$set': message}, upsert=True)
 
-# filter passed in as int, converted to string
+
 def retrieve_messages_from_mongodb(collection, filter):
-    messages_cursor = collection.find({'group_id': f'{filter}'})
+    messages_cursor = collection.find({'group_id': f'{filter}'}) # Filter must be string
     return list(messages_cursor)
 
-# def insert_groups_into_mongodb(groups, collection):
-#     for group in groups['response']:
-#         group_info = {'id': group['id'], 
-#                        'name': group['name'],
-#                        'image_url': group['image_url']}
-#         # collection.insert_one(group_info)
-#         collection.update_one({'id': group['id']}, {'$set': group_info}, upsert=True)
-
-
-# def retrieve_groups_from_mongodb(collection):
-#     groups_cursor = collection.find({})
-#     return list(groups_cursor)
 
 def getFormattedMessages(messages_from_db):
     formatted_messages = []
@@ -157,12 +131,13 @@ def getFormattedMessages(messages_from_db):
         try:
             speaker = message.get("name","")
         except KeyError:
-            speaker = "Unknown"  # Use a default value if 'speaker' field is missing
+            speaker = "Unknown"
         utterance = message.get("text", "")
         formatted_message = {"speaker": speaker, "utterance": utterance}
         formatted_messages.append(formatted_message)
 
     return formatted_messages
+
 
 def oneAi_summary(oneAi_token, messages, skill): # message is in {name: message} form
     url = "https://api.oneai.com/api/v0/pipeline"
@@ -172,7 +147,7 @@ def oneAi_summary(oneAi_token, messages, skill): # message is in {name: message}
         "content-type": "application/json"
     }
     payload = {
-        "input": messages,  # Use your formatted_messages list here
+        "input": messages,
         "input_type": "conversation",
         "content_type": "application/json",
         "output_type": "json",
@@ -189,7 +164,7 @@ def oneAi_summary(oneAi_token, messages, skill): # message is in {name: message}
     data = r.json()
     try:
         r = requests.post(url, json=payload, headers=headers)
-        r.raise_for_status()  # Will raise HTTPError for bad requests (4XX or 5XX)
+        r.raise_for_status()
         data = r.json()
         print(data)
         return data['output'][0]['contents'][0]['utterance']  # text
@@ -224,6 +199,7 @@ def load_group_page(group_id):
 
     return render_template('group_page.html', summary=summary, action_items=action_items)
 # -------------------------------------------------------------------
+
 
 @app.route("/")
 def index():
