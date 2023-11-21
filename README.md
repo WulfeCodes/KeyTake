@@ -1,3 +1,20 @@
-# aiATL
-This repo is for the AI ATL Hackathon 2023
-"A thousand moments that I had just taken for granted- mostly because I had assumed that there would be a thousand more."
+## AI ATL Hackathon 2023
+
+## Technologies Used
+
+### Back-End
+
+- **MongoDB**
+- **Flask**
+
+### Front-End
+
+- **HTML**
+- **CSS**
+- **Jinja**
+
+### API Integration
+
+- **OpenAI API**
+- **OneAI API**
+- **GroupMe API**
