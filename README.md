@@ -15,6 +15,5 @@
 
 ### API Integration
 
-- **OpenAI API**
 - **OneAI API**
 - **GroupMe API**
