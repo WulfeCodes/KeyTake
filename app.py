@@ -68,8 +68,8 @@ def getMessages(access_token, group_id):
     url = f"https://api.groupme.com/v3/groups/{group_id}/messages"
     
     # Calculate the timestamp for one week ago
-    # one_week_ago = datetime.now() - timedelta(weeks=1)
-    one_day_ago = datetime.now() - timedelta(days=1)
+    one_week_ago = datetime.now() - timedelta(weeks=1)
+    # one_day_ago = datetime.now() - timedelta(days=1)
     
     # Initialize parameters for the API call
     params = {
@@ -94,7 +94,7 @@ def getMessages(access_token, group_id):
                 last_message_time = datetime.utcfromtimestamp(messages[-1]['created_at'])
                 
                 # If the last message is within the past week, fetch the next batch
-                fetch_more = last_message_time > one_day_ago
+                fetch_more = last_message_time > one_week_ago
                 
                 # Update the before_id to fetch the next batch of messages
                 params['before_id'] = messages[-1]['id']
@@ -102,7 +102,8 @@ def getMessages(access_token, group_id):
                 for message in messages:
                     message_time = datetime.utcfromtimestamp(message['created_at'])
                     # Check if it is within time range
-                    if message_time > one_day_ago:
+                    # if message_time > one_day_ago:
+                    if message_time > one_week_ago:
                         message_info = {
                             'id': message['id'],
                             'group_id': message['group_id'],

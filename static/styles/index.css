@@ -1,7 +1,7 @@
 body {
-    background-color: #121212; /* Dark background */
-    color: #ffffff; /* Light text */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 20px;
     height: 100vh;
@@ -23,9 +23,9 @@ p {
 }
 
 button {
-    background-color: #1f1f1f; /* Dark button background */
-    color: #ffffff; /* Light button text */
-    border: 2px solid #ffffff; /* White border */
+    background-color: #1f1f1f;
+    color: #ffffff; 
+    border: 2px solid #ffffff;
     padding: 10px 20px;
     font-size: 1rem;
     cursor: pointer;
@@ -33,8 +33,8 @@ button {
 }
 
 button:hover {
-    background-color: #ffffff; /* Light button background */
-    color: #1f1f1f; /* Dark button text */
+    background-color: #ffffff; 
+    color: #1f1f1f; 
 }
 
 form {

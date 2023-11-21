@@ -1,59 +1,57 @@
 body {
-    background-color: #121212; /* Dark background */
-    color: #ffffff; /* Light text */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern font */
+    background-color: #121212;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Aligns content to the top */
+    justify-content: flex-start;
     text-align: center;
 }
 
 h2 {
     color: #ffffff;
-    font-size: 2rem; /* Size for h2 */
-    margin-top: 1em; /* Spacing above h2 */
-    margin-bottom: 0.5em; /* Spacing below h2 */
+    font-size: 2rem;
+    margin-top: 1em;
+    margin-bottom: 0.5em;
 }
 
 p {
     font-size: 1.2rem;
-    margin-bottom: 2em; /* Spacing below paragraphs */
+    margin-bottom: 2em;
 }
 
 .container {
     width: 100%;
-    max-width: 900px; /* Adjusted for potentially wider content */
+    max-width: 900px;
     display: flex;
-    flex-direction: column; /* Stacks the children vertically */
-    align-items: center; /* Centers the children horizontally */
+    flex-direction: column;
+    align-items: center;
 }
 
 .column {
-    background-color: #1f1f1f; /* Dark background for columns */
-    margin: 10px 0; /* Vertical margin */
+    background-color: #1f1f1f;
+    margin: 10px 0;
     padding: 20px;
-    border-radius: 5px; /* Rounded corners for columns */
-    width: 100%; /* Full width of the container */
-    box-sizing: border-box; /* Ensures padding is included in the width */
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-/* Specific style for the calendar image */
 .calendar-image {
-    width: 100px; /* Set your desired width */
-    height: auto; /* Maintain aspect ratio */
-    border-radius: 5px; /* Rounded corners for the image */
-    margin-top: 20px; /* Spacing above the image */
-    display: block; /* Ensures that the image does not inline with text */
-    margin-left: auto; /* Centers the image */
+    width: 100px;
+    height: auto;
+    border-radius: 5px;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
     margin-right: auto;
 }
 
-/* Responsive adjustments for smaller devices */
 @media (max-width: 768px) {
     h2 {
-        font-size: 2.5rem; /* Smaller font size for smaller devices */
+        font-size: 2.5rem;
     }
 }
