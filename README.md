@@ -1,4 +1,5 @@
 ## KeyTake: AI ATL Hackathon 2023 Submission
+
 ## Contributors: Avihhan A Kumarr, Raphael Palacio, Vijay Wulfekuhle, Zach Cheng 
 
 ## Technologies Used
